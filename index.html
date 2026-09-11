@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoCollect Telangana | Smart E-Waste Collection & Circular Rewards</title>
+  <meta name="description" content="Smart E-Waste Collection Platform in Telangana, India. Learn proper electronic sorting, locate recycling centers, upload GPS geotagged waste photos, earn weight-scaled reward points, and redeem electronic vouchers." />
+
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome 6.5.1 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Leaflet 1.9.4 CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Custom Design System Styles -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/map.css" />
+</head>
+<body class="auth-locked">
+
+  <!-- ====================================================================
+       MANDATORY AUTHENTICATION GATE & GMAIL OTP VERIFICATION SCREEN
+       Displayed first to every user before accessing the platform
+       ==================================================================== -->
+  <div class="auth-gate-overlay" id="authGateScreen">
+    <div class="auth-gate-card">
+      <div class="auth-brand-center">
+        <div class="brand-icon">
+          <i class="fa-solid fa-recycle"></i>
+        </div>
+        <h2 style="font-size: 1.6rem; margin-bottom: 0.2rem;">
+          EcoCollect <span class="badge-state" style="font-size: 0.65rem;">Telangana</span>
+        </h2>
+        <p style="font-size: 0.82rem; color: var(--text-secondary);">
+          Smart E-Waste Recovery & Circular Rewards Platform
+        </p>
+      </div>
+
+      <!-- STEP 1: CREDENTIALS / SIGN IN / SIGN UP -->
+      <div id="authStepCredentials">
+        <div class="auth-tab-switch">
+          <button type="button" class="auth-tab-btn active" id="authTabSignIn">Sign In</button>
+          <button type="button" class="auth-tab-btn" id="authTabSignUp">Create Account</button>
+        </div>
+
+        <!-- Quick Google / Gmail Authentication -->
+        <button type="button" class="btn-google-auth" id="authGoogleQuickBtn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.64 9.20455C17.64 8.56636 17.5827 7.95273 17.4764 7.36364H9V10.845H13.8436C13.635 11.97 13.0009 12.9232 12.0477 13.5614V15.8195H14.9564C16.6582 14.2527 17.64 11.9455 17.64 9.20455Z" fill="#4285F4"/>
+            <path d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5614C11.2418 14.1014 10.2109 14.4205 9 14.4205C6.65591 14.4205 4.67182 12.8373 3.96409 10.71H0.957275V13.0418C2.43818 15.9832 5.48182 18 9 18Z" fill="#34A853"/>
+            <path d="M3.96409 10.71C3.78409 10.17 3.68182 9.59318 3.68182 9C3.68182 8.40682 3.78409 7.83 3.96409 7.29V4.95818H0.957275C0.347727 6.17318 0 7.54773 0 9C0 10.4523 0.347727 11.8268 0.957275 13.0418L3.96409 10.71Z" fill="#FBBC05"/>
+            <path d="M9 3.57955C10.3214 3.57955 11.5077 4.03364 12.4405 4.92545L15.0218 2.34409C13.4632 0.891818 11.4259 0 9 0C5.48182 0 2.43818 2.01682 0.957275 4.95818L3.96409 7.29C4.67182 5.16273 6.65591 3.57955 9 3.57955Z" fill="#EA4335"/>
+          </svg>
+          Continue with Google / Gmail
+        </button>
+
+        <div class="auth-divider">
+          <span>or sign in with email</span>
+        </div>
+
+        <form id="authCredentialsForm">
+          <div class="form-group" id="authNameInputGroup" style="display: none;">
+            <label for="authNameInput"><i class="fa-solid fa-user"></i> Full Name</label>
+            <input type="text" id="authNameInput" class="form-control" placeholder="e.g. Shailu Sri" />
+          </div>
+
+          <div class="form-group">
+            <label for="authEmailInput"><i class="fa-solid fa-envelope"></i> Gmail / Email Address</label>
+            <input type="email" id="authEmailInput" class="form-control" placeholder="name@gmail.com" value="shailu.sri@gmail.com" required />
+            <div class="field-hint">A 6-digit verification code will be sent to this email.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="authPasswordInput"><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="authPasswordInput" class="form-control" placeholder="••••••••" value="ecocollect2026" />
+          </div>
+
+          <button type="submit" class="btn-primary" id="authSubmitCredsBtn" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem;">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In with Gmail
+          </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; text-align: center;">
+          <span style="font-size: 0.76rem; color: var(--text-muted);">Quick Test Account:</span>
+          <div class="demo-accounts-row" style="justify-content: center;">
+            <button type="button" class="demo-account-chip" onclick="window.App.fastLogin('shailu.sri@gmail.com')">
+              <i class="fa-solid fa-circle-check" style="color: var(--emerald-400);"></i> Shailu Sri (2,450 Pts)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: GMAIL OTP VERIFICATION CODE SCREEN -->
+      <div id="authStepOtp" style="display: none;">
+        <h3 style="font-size: 1.3rem; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-shield-halved" style="color: var(--sky-400);"></i> Verify Your Gmail
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+          We sent a 6-digit security code to: <br />
+          <strong id="otpTargetEmailDisplay" style="color: #fff;">user@gmail.com</strong>
+        </p>
+
+        <!-- Simulated Incoming Google Security Delivery Notification -->
+        <div class="gmail-push-notification" id="gmailPushNotification">
+          <div class="gmail-notif-icon">
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+          <div class="gmail-notif-body">
+            <div class="gmail-notif-header">
+              <span>Google Security Alert</span>
+              <span>Just now</span>
+            </div>
+            <div class="gmail-notif-title">EcoCollect Telangana Verification Code</div>
+            <div>Your single-use sign-in passcode is:</div>
+            <div class="gmail-notif-code-highlight" id="gmailAlertCodeVal">849201</div>
+          </div>
+        </div>
+
+        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 0.45rem;">
+          Enter 6-Digit Passcode:
+        </label>
+
+        <!-- 6 OTP Digit Boxes -->
+        <div class="otp-inputs-row" id="otpInputsRow">
+          <input type="text" maxlength="1" class="otp-box" id="otpBox1" pattern="[0-9]*" inputmode="numeric" />
+          <input type="text" maxlength="1" class="otp-box" id="otpBox2" pattern="[0-9]*" inputmode="numeric" />
+          <input type="text" maxlength="1" class="otp-box" id="otpBox3" pattern="[0-9]*" inputmode="numeric" />
+          <input type="text" maxlength="1" class="otp-box" id="otpBox4" pattern="[0-9]*" inputmode="numeric" />
+          <input type="text" maxlength="1" class="otp-box" id="otpBox5" pattern="[0-9]*" inputmode="numeric" />
+          <input type="text" maxlength="1" class="otp-box" id="otpBox6" pattern="[0-9]*" inputmode="numeric" />
+        </div>
+
+        <button type="button" class="btn-primary" id="verifyOtpSubmitBtn" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; margin-bottom: 1rem;">
+          <i class="fa-solid fa-circle-check"></i> Verify & Sign In
+        </button>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+          <button type="button" id="backToCredsBtn" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">
+            <i class="fa-solid fa-arrow-left"></i> Change email
+          </button>
+          <button type="button" id="resendOtpCodeBtn" style="background: none; border: none; color: var(--sky-400); cursor: pointer; font-weight: 700;">
+            Resend Code <span id="resendTimerCountdown">(30s)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Navigation Header with exact requested sequence -->
+  <header class="header-nav">
+    <div class="nav-container">
+      <a href="#" class="brand-logo" onclick="window.App.switchView('tipsView'); return false;">
+        <div class="brand-icon">
+          <i class="fa-solid fa-recycle"></i>
+        </div>
+        <div class="brand-text">
+          <h1>EcoCollect <span class="badge-state">Telangana</span></h1>
+          <span class="brand-tagline">Smart E-Waste Recovery & Circular Rewards</span>
+        </div>
+      </a>
+
+      <!-- Main Navigation Tabs: Eco Tips -> Dashboard -> Submit -> My Submissions -> Centers -> Rewards -> My Redemptions -->
+      <nav>
+        <ul class="nav-links">
+          <!-- 1. Eco Tips (Starting View) -->
+          <li>
+            <button class="nav-item-btn active" data-view="tipsView">
+              <i class="fa-solid fa-lightbulb"></i> Eco Tips
+            </button>
+          </li>
+          <!-- 2. Dashboard & Impact -->
+          <li>
+            <button class="nav-item-btn" data-view="dashboardView">
+              <i class="fa-solid fa-chart-pie"></i> Dashboard
+            </button>
+          </li>
+          <!-- 3. Submit E-Waste -->
+          <li>
+            <button class="nav-item-btn" data-view="submitView">
+              <i class="fa-solid fa-camera"></i> Submit E-Waste
+            </button>
+          </li>
+          <!-- 4. My Submissions (Dedicated Page) -->
+          <li>
+            <button class="nav-item-btn" data-view="submissionsView">
+              <i class="fa-solid fa-clock-rotate-left"></i> My Submissions
+              <span class="nav-pill-count" id="navSubmissionsPill">2</span>
+            </button>
+          </li>
+          <!-- 5. Collection Centers -->
+          <li>
+            <button class="nav-item-btn" data-view="mapView">
+              <i class="fa-solid fa-map-location-dot"></i> Collection Centers
+            </button>
+          </li>
+          <!-- 6. Rewards Catalog -->
+          <li>
+            <button class="nav-item-btn" data-view="rewardsView">
+              <i class="fa-solid fa-gift"></i> Rewards
+            </button>
+          </li>
+          <!-- 7. My Redemptions (Dedicated Vault) -->
+          <li>
+            <button class="nav-item-btn" data-view="redemptionsView">
+              <i class="fa-solid fa-ticket"></i> My Redemptions
+              <span class="nav-pill-count" id="navRedemptionsPill">1</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- User Points Badge & Profile Settings Dropdown -->
+      <div class="nav-actions">
+        <div class="points-pill" title="Your Current Points Balance">
+          <i class="fa-solid fa-coins"></i>
+          <span class="user-points-val">2,450</span> Pts
+        </div>
+
+        <button class="user-profile-btn" id="userProfileTriggerBtn" title="Account Menu">
+          <div class="user-avatar" id="navAvatarInitial">S</div>
+          <div style="text-align: left; line-height: 1.2;">
+            <div style="font-weight: 700; font-size: 13px;" id="navUserName">Shailu Sri</div>
+            <div style="font-size: 11px; color: var(--emerald-400);" id="navUserTier">Earth Guardian</div>
+          </div>
+          <i class="fa-solid fa-chevron-down" style="font-size: 11px; color: var(--text-muted);"></i>
+        </button>
+
+        <!-- Profile Dropdown Menu -->
+        <div class="profile-dropdown-menu" id="profileDropdownMenu">
+          <div style="padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 0.35rem;">
+            <div style="font-weight: 700; font-size: 0.9rem;" id="dropdownUserName">Shailu Sri</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);" id="dropdownUserEmail">shailu.sri@gmail.com</div>
+          </div>
+          <button class="profile-dropdown-item" onclick="window.App.openAuthModal()">
+            <i class="fa-solid fa-user-gear"></i> Profile Details
+          </button>
+          <button class="profile-dropdown-item" onclick="window.App.switchView('submissionsView')">
+            <i class="fa-solid fa-clock-rotate-left"></i> My Submissions
+          </button>
+          <button class="profile-dropdown-item danger" id="logoutDropdownBtn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out / Switch Account
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Real-Time GPS Tracking Ribbon (Telangana, India) -->
+  <aside class="gps-status-ribbon">
+    <div class="gps-ribbon-content">
+      <div class="gps-live-indicator">
+        <div class="radar-dot"></div>
+        <span>Present Real-Time GPS:</span>
+        <span class="gps-location-text" id="gpsLocationText">
+          <i class="fa-solid fa-location-dot" style="color: var(--emerald-400);"></i> HITEC City, Hyderabad, Telangana, India
+        </span>
+        <span class="gps-coords-badge" id="gpsCoordsBadge">17.4474° N, 78.3762° E</span>
+      </div>
+
+      <div class="gps-actions">
+        <button class="btn-mini" id="gpsLocateMeBtn" title="Sync live browser GPS position">
+          <i class="fa-solid fa-crosshairs"></i> Locate Me Live
+        </button>
+        <span style="font-size: 11px; color: var(--text-muted);">State: Telangana, IN</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- ====================================================================
+         PAGE 1: ECO TIPS & SORTING GUIDES (tipsView)
+         [DEFAULT STARTING VIEW WHEN USER LOGS IN / OPENS SITE]
+         ==================================================================== -->
+    <section class="app-view active" id="tipsView">
+      <div class="tips-hero">
+        <div class="tips-hero-text">
+          <h1>Proper E-Waste Sorting & Safe Recycling Guide</h1>
+          <p>
+            Welcome to EcoCollect Telangana! Before submitting your electronic waste, follow our visual guidelines below to wipe personal data, tape battery terminals for fire safety, and earn maximum points.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.85rem; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="window.App.switchView('submitView')">
+            <i class="fa-solid fa-camera"></i> Ready? Submit E-Waste
+          </button>
+          <button class="btn-secondary" onclick="window.App.switchView('dashboardView')">
+            <i class="fa-solid fa-chart-pie"></i> View Impact Dashboard
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive Pre-submission Checklist -->
+      <div class="checklist-card">
+        <div class="checklist-header">
+          <div>
+            <h3 style="font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-clipboard-check" style="color: var(--emerald-400);"></i> Pre-Submission Safety Checklist
+            </h3>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-top: 0.2rem;">
+              Check off these essential safety steps before taking your drop-off photo.
+            </p>
+          </div>
+          <span class="calc-tier-badge" id="checklistCheckedCount" style="font-size: 0.82rem; padding: 0.3rem 0.8rem;">
+            0 of 4 Checked
+          </span>
+        </div>
+
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="checklistProgressBar"></div>
+        </div>
+
+        <div class="checklist-items-grid">
+          <label class="eco-check-item">
+            <input type="checkbox" class="eco-check-input" id="checkWipeData" />
+            <div>
+              <strong style="font-size: 0.9rem; color: #fff;">Wipe Personal Data</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">Perform a factory reset and remove Google / iCloud accounts.</div>
+            </div>
+          </label>
+
+          <label class="eco-check-item">
+            <input type="checkbox" class="eco-check-input" id="checkRemoveSim" />
+            <div>
+              <strong style="font-size: 0.9rem; color: #fff;">Remove SIM & SD Cards</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">Eject memory cards, SIM trays, and external storage dongles.</div>
+            </div>
+          </label>
+
+          <label class="eco-check-item">
+            <input type="checkbox" class="eco-check-input" id="checkTapeTerminals" />
+            <div>
+              <strong style="font-size: 0.9rem; color: #fff;">Tape Battery Terminals</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">Apply clear or electrical tape over contact pins to prevent short-circuits.</div>
+            </div>
+          </label>
+
+          <label class="eco-check-item">
+            <input type="checkbox" class="eco-check-input" id="checkBundleCables" />
+            <div>
+              <strong style="font-size: 0.9rem; color: #fff;">Bundle Chargers & Wires</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">Coil power cords neatly with rubber bands or twist ties.</div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Ready Celebration Banner -->
+        <div class="checklist-ready-banner" id="checklistReadyBanner">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fa-solid fa-circle-check" style="color: var(--emerald-400); font-size: 1.4rem;"></i>
+            <div>
+              <strong style="color: #fff; font-size: 0.95rem;">All Safety Checks Completed!</strong>
+              <div style="font-size: 0.8rem; color: var(--emerald-400);">Your e-waste is clean, safe, and ready for verified drop-off.</div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="window.App.switchView('submitView')">
+            <i class="fa-solid fa-camera"></i> Proceed to Submit E-Waste
+          </button>
+        </div>
+      </div>
+
+      <!-- Visual Categories of Recyclable Electronics -->
+      <div style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.4rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+          <i class="fa-solid fa-shapes" style="color: var(--sky-400);"></i> Sorting Guidelines by Electronic Type
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary);">
+          Understand proper handling for different electronics to protect the environment and our collection staff in Telangana.
+        </p>
+      </div>
+
+      <div class="tips-grid">
+        <!-- 1. Smartphones & Tablets -->
+        <div class="tip-card">
+          <div class="tip-card-header">
+            <div class="tip-icon-wrap mobile">
+              <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <div>
+              <span class="tip-category-tag">High Recovery • 160 pts/kg</span>
+              <h3 class="tip-title">Smartphones & Tablets</h3>
+            </div>
+          </div>
+          <ul class="tip-steps-list">
+            <li><i class="fa-solid fa-check"></i> <strong>Data Erase:</strong> Go to Settings ➔ System ➔ Reset ➔ Erase All Data (Factory Reset).</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Eject Cards:</strong> Use a SIM ejector tool to extract nano-SIMs and microSD cards.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Screen Integrity:</strong> If screen is shattered, place phone in a clear ziplock pouch to prevent cuts.</li>
+          </ul>
+          <div class="tip-safety-note">
+            <i class="fa-solid fa-triangle-exclamation"></i> Never puncture swollen phone batteries; handle with utmost care.
+          </div>
+        </div>
+
+        <!-- 2. Laptops & Computers -->
+        <div class="tip-card">
+          <div class="tip-card-header">
+            <div class="tip-icon-wrap laptop">
+              <i class="fa-solid fa-laptop"></i>
+            </div>
+            <div>
+              <span class="tip-category-tag">Valuable Circuitry • 140 pts/kg</span>
+              <h3 class="tip-title">Laptops & Desktops</h3>
+            </div>
+          </div>
+          <ul class="tip-steps-list">
+            <li><i class="fa-solid fa-check"></i> <strong>Drive Sanitation:</strong> Back up documents to cloud, then wipe drive using built-in Windows/macOS utilities.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Separate Battery:</strong> If battery is removable, detach it and place beside the laptop.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Include Power Brick:</strong> Bundling original chargers increases total recyclable weight & points!</li>
+          </ul>
+          <div class="tip-safety-note" style="background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.3); color: var(--sky-400);">
+            <i class="fa-solid fa-shield"></i> Drives are degaussed and shredded at certified Telangana recycling facilities.
+          </div>
+        </div>
+
+        <!-- 3. Lithium & Hazard Batteries -->
+        <div class="tip-card">
+          <div class="tip-card-header">
+            <div class="tip-icon-wrap battery">
+              <i class="fa-solid fa-car-battery"></i>
+            </div>
+            <div>
+              <span class="tip-category-tag">Hazardous Grade • 190 pts/kg</span>
+              <h3 class="tip-title">Batteries & Power Banks</h3>
+            </div>
+          </div>
+          <ul class="tip-steps-list">
+            <li><i class="fa-solid fa-check"></i> <strong>Tape Terminals:</strong> Cover gold/metal contacts with non-conductive tape to prevent sparks.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Keep Dry:</strong> Never expose discarded lithium packs to water, rain, or high heat.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>No Metal Mixing:</strong> Do not store loose batteries in bags with metal keys or coins.</li>
+          </ul>
+          <div class="tip-safety-note">
+            <i class="fa-solid fa-fire-flame-curved"></i> High points bonus: Diverting batteries prevents groundwater toxic pollution.
+          </div>
+        </div>
+
+        <!-- 4. Cables, Adapters & PCBs -->
+        <div class="tip-card">
+          <div class="tip-card-header">
+            <div class="tip-icon-wrap cables">
+              <i class="fa-solid fa-microchip"></i>
+            </div>
+            <div>
+              <span class="tip-category-tag">Copper & Circuitry • 110 pts/kg</span>
+              <h3 class="tip-title">Cables, Adapters & PCBs</h3>
+            </div>
+          </div>
+          <ul class="tip-steps-list">
+            <li><i class="fa-solid fa-check"></i> <strong>Detangle Wires:</strong> Untangle knots to help recycling sorters quickly categorize copper grades.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Coil Neatly:</strong> Use rubber bands or bread ties to wrap cables into compact loops.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>PCBs:</strong> Keep motherboards and RAM sticks dry and free of excessive food/drink stains.</li>
+          </ul>
+          <div class="tip-safety-note" style="background: rgba(192, 132, 252, 0.1); border-color: rgba(192, 132, 252, 0.3); color: var(--purple-400);">
+            <i class="fa-solid fa-recycle"></i> Copper and gold traces in cables are 100% recyclable indefinitely!
+          </div>
+        </div>
+
+        <!-- 5. Monitors, TVs & Screens -->
+        <div class="tip-card">
+          <div class="tip-card-header">
+            <div class="tip-icon-wrap screens">
+              <i class="fa-solid fa-tv"></i>
+            </div>
+            <div>
+              <span class="tip-category-tag">Heavy Display • 85 pts/kg</span>
+              <h3 class="tip-title">Monitors & Television Screens</h3>
+            </div>
+          </div>
+          <ul class="tip-steps-list">
+            <li><i class="fa-solid fa-check"></i> <strong>Protect Display Glass:</strong> Cover the screen face with a piece of cardboard during transport.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Keep Stand Attached:</strong> Heavy metal/plastic monitor stands add to your rewarded weight.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Remote Controls:</strong> Remove standard AA/AAA batteries before submitting remotes.</li>
+          </ul>
+          <div class="tip-safety-note" style="background: rgba(45, 212, 191, 0.1); border-color: rgba(45, 212, 191, 0.3); color: var(--teal-400);">
+            <i class="fa-solid fa-eye"></i> Old CRT and CCFL screens contain phosphor and mercury that require specialized recovery.
+          </div>
+        </div>
+
+        <!-- 6. Home Appliances -->
+        <div class="tip-card">
+          <div class="tip-card-header">
+            <div class="tip-icon-wrap appliances">
+              <i class="fa-solid fa-blender-phone"></i>
+            </div>
+            <div>
+              <span class="tip-category-tag">Bulk Volume • 60 pts/kg</span>
+              <h3 class="tip-title">Home Electronics & Appliances</h3>
+            </div>
+          </div>
+          <ul class="tip-steps-list">
+            <li><i class="fa-solid fa-check"></i> <strong>Drain Fluids:</strong> Ensure microwaves, coffee makers, and water purifiers are completely empty and dry.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Secure Moving Parts:</strong> Tape doors or lids shut so they don't swing open during transit.</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Clean Surface:</strong> Wipe away heavy food residues or dust before taking the submission photo.</li>
+          </ul>
+          <div class="tip-safety-note" style="background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.3); color: var(--rose-500);">
+            <i class="fa-solid fa-weight-hanging"></i> Bulk multipliers apply! Larger appliances over 10 kg qualify for +50% Gold Champion points.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         PAGE 2: DASHBOARD & IMPACT CHARTS (dashboardView)
+         Colorful Charts for Weight Recycled & Points Growth
+         ==================================================================== -->
+    <section class="app-view" id="dashboardView">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2><i class="fa-solid fa-chart-pie" style="color: var(--emerald-400);"></i> Personal Impact Dashboard</h2>
+          <p>
+            Track your environmental milestones, total weight of electronic waste diverted from landfills, and reward points growth using interactive charts.
+          </p>
+        </div>
+        <button class="btn-primary" onclick="window.App.switchView('submitView')">
+          <i class="fa-solid fa-plus"></i> New E-Waste Drop-off
+        </button>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="stats-grid">
+        <div class="metric-card">
+          <div class="metric-icon green">
+            <i class="fa-solid fa-weight-scale"></i>
+          </div>
+          <div class="metric-info">
+            <h3 id="impactTotalWeight">5.5 kg</h3>
+            <p>Total E-Waste Recycled</p>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon amber">
+            <i class="fa-solid fa-coins"></i>
+          </div>
+          <div class="metric-info">
+            <h3 class="user-points-val">2,450</h3>
+            <p>Total Points Earned</p>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon sky">
+            <i class="fa-solid fa-tree"></i>
+          </div>
+          <div class="metric-info">
+            <h3 id="impactTreesEquiv">10 Trees</h3>
+            <p>Tree Carbon Equivalence</p>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon purple">
+            <i class="fa-solid fa-droplet"></i>
+          </div>
+          <div class="metric-info">
+            <h3 id="impactWaterEquiv">770 Liters</h3>
+            <p>Groundwater Protected</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colorful Impact Charts Grid (Chart.js) -->
+      <div class="charts-grid">
+        <!-- Chart 1: Category Composition Donut -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3><i class="fa-solid fa-chart-pie" style="color: var(--emerald-400);"></i> E-Waste Composition Breakdown</h3>
+            <span style="font-size: 11px; color: var(--text-muted);">% by weight</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="wasteCompositionChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Monthly Recycling Volume Bar & Line -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3><i class="fa-solid fa-chart-column" style="color: var(--sky-400);"></i> Monthly Recycling Volume (kg)</h3>
+            <span style="font-size: 11px; color: var(--emerald-400); font-weight: 700;">+26% MoM</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="monthlyVolumeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 3: Points Growth Trajectory Area Chart -->
+        <div class="chart-card full-width">
+          <div class="chart-header">
+            <h3><i class="fa-solid fa-arrow-trend-up" style="color: var(--amber-400);"></i> Reward Points Accumulation & Tier Progress</h3>
+            <span class="calc-tier-badge" style="background: rgba(245, 158, 11, 0.2); color: var(--amber-400);">Earth Guardian Tier</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="pointsGrowthChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progressive Weight Scaling Rules -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 2rem; margin-bottom: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+          <div>
+            <h3 style="font-size: 1.35rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-scale-balanced" style="color: var(--emerald-400);"></i> Weight Scaling Formula: More Weight = Greater Points
+            </h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+              The heavier your collected batch, the higher your multiplier bonus!
+            </p>
+          </div>
+          <button class="btn-secondary" onclick="window.App.switchView('submitView')">
+            <i class="fa-solid fa-sliders"></i> Open Weight Calculator
+          </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.2rem; text-align: center;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Standard</span>
+            <h4 style="font-size: 1.2rem; margin: 0.25rem 0; color: #fff;">0.1 - 1.5 kg</h4>
+            <div style="color: var(--emerald-400); font-weight: 700; font-size: 0.9rem;">1.0x Base Scale</div>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.2rem; text-align: center;">
+            <span style="font-size: 0.75rem; color: #38bdf8; text-transform: uppercase; font-weight: 700;">Bronze Tier</span>
+            <h4 style="font-size: 1.2rem; margin: 0.25rem 0; color: #fff;">1.5 - 4.0 kg</h4>
+            <div style="color: #38bdf8; font-weight: 700; font-size: 0.9rem;">1.10x (+10% Bonus)</div>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-md); padding: 1.2rem; text-align: center;">
+            <span style="font-size: 0.75rem; color: var(--amber-400); text-transform: uppercase; font-weight: 700;">Silver Tier</span>
+            <h4 style="font-size: 1.2rem; margin: 0.25rem 0; color: #fff;">4.0 - 10.0 kg</h4>
+            <div style="color: var(--amber-400); font-weight: 700; font-size: 0.9rem;">1.20x - 1.35x Bonus</div>
+          </div>
+
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid var(--emerald-400); border-radius: var(--radius-md); padding: 1.2rem; text-align: center;">
+            <span style="font-size: 0.75rem; color: var(--emerald-400); text-transform: uppercase; font-weight: 700;">Gold Champion</span>
+            <h4 style="font-size: 1.2rem; margin: 0.25rem 0; color: #fff;">10.0+ kg</h4>
+            <div style="color: var(--emerald-400); font-weight: 800; font-size: 0.9rem;">+50% Extra Points</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         PAGE 3: SUBMIT E-WASTE & LIVE GPS GEOTAG PHOTO (submitView)
+         Dynamic Weight Calculator & Canvas Watermarking
+         ==================================================================== -->
+    <section class="app-view" id="submitView">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2><i class="fa-solid fa-camera" style="color: var(--emerald-400);"></i> Submit E-Waste & Geotag Photo</h2>
+          <p>
+            Upload a photo of your e-waste. The platform automatically watermarks your verified Telangana GPS location, IST timestamp, and weight directly onto the photo for instant reward verification!
+          </p>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--emerald-400); font-weight: 700; background: rgba(16, 185, 129, 0.12); padding: 0.4rem 0.8rem; border-radius: var(--radius-full); border: 1px solid rgba(16, 185, 129, 0.3);">
+          <i class="fa-solid fa-shield-halved"></i> Tamper-Proof Geotag Engine
+        </div>
+      </div>
+
+      <div class="submit-flow-grid">
+        <!-- Form Details -->
+        <div class="upload-form-card">
+          <form id="ewasteSubmissionForm">
+            <!-- 1. Category Selection -->
+            <div class="form-group">
+              <label for="wasteCategorySelect"><i class="fa-solid fa-layer-group"></i> E-Waste Item Category</label>
+              <select id="wasteCategorySelect" class="form-select">
+                <option value="smartphones" selected>Smartphones & Tablets (High Recovery - 160 pts/kg)</option>
+                <option value="laptops">Laptops, Computers & Servers (140 pts/kg)</option>
+                <option value="batteries">Lithium & Lead-Acid Batteries (Hazard Grade - 190 pts/kg)</option>
+                <option value="cables_pcbs">Circuit Boards, RAM & Copper Cables (110 pts/kg)</option>
+                <option value="screens_monitors">Monitors, TVs & Displays (85 pts/kg)</option>
+                <option value="appliances">Home Appliances (Microwaves, AC units) (60 pts/kg)</option>
+              </select>
+            </div>
+
+            <!-- 2. Dynamic Weight-Based Points Calculator Section -->
+            <div class="form-group">
+              <label><i class="fa-solid fa-scale-unbalanced-flip"></i> Weight in Kilograms (Weight Scales Points!)</label>
+              <div class="weight-slider-box">
+                <div class="weight-header-row">
+                  <span style="font-size: 0.85rem; color: var(--text-secondary);">Select or Slide Weight:</span>
+                  <div class="weight-display-val" id="weightDisplayValue">
+                    1.0 <span>kg</span>
+                  </div>
+                </div>
+
+                <input type="range" id="weightRangeInput" class="weight-range-slider" min="0.1" max="35.0" step="0.1" value="1.0" />
+
+                <!-- Quick Presets -->
+                <div class="weight-presets">
+                  <button type="button" class="preset-chip" onclick="window.EwasteUploader.setWeightPreset(0.5)">0.5 kg</button>
+                  <button type="button" class="preset-chip" onclick="window.EwasteUploader.setWeightPreset(2.0)">2.0 kg</button>
+                  <button type="button" class="preset-chip" onclick="window.EwasteUploader.setWeightPreset(5.0)">5.0 kg</button>
+                  <button type="button" class="preset-chip" onclick="window.EwasteUploader.setWeightPreset(10.0)">10.0 kg</button>
+                  <button type="button" class="preset-chip" onclick="window.EwasteUploader.setWeightPreset(25.0)">25.0 kg</button>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem;">
+                  <span style="font-size: 0.8rem; color: var(--text-secondary);">Exact weight entry:</span>
+                  <input type="number" id="weightNumberInput" class="form-control" style="width: 100px; padding: 0.35rem 0.6rem; font-size: 0.85rem;" min="0.1" max="100" step="0.1" value="1.0" />
+                  <span style="font-size: 0.85rem; color: var(--text-muted);">kg</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Points Breakdown Box -->
+            <div class="points-calc-summary">
+              <div>
+                <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700;">Earned Reward Points</span>
+                <div class="calc-points-val" id="calcPointsDisplay">+160 Pts</div>
+                <div class="calc-tier-badge" id="calcTierDisplay">Standard Tier</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 0.85rem; color: var(--emerald-400); font-weight: 700;" id="calcCo2Saved">2.1 kg CO₂ diverted</div>
+                <div style="font-size: 0.78rem; color: var(--sky-400);" id="calcToxicSaved">35g toxic metals saved</div>
+              </div>
+            </div>
+
+            <!-- 3. Target Collection Center -->
+            <div class="form-group">
+              <label for="nearestCenterSelect"><i class="fa-solid fa-location-crosshairs"></i> Target Telangana Collection Center</label>
+              <select id="nearestCenterSelect" class="form-select">
+                <option value="tg-01">HITEC City EcoRecycle Hub (Cyberabad, Hyderabad)</option>
+                <option value="tg-02">Gachibowli Green Drop Zone (Financial District)</option>
+                <option value="tg-03">Secunderabad Cantonment E-Waste Center (MG Road)</option>
+                <option value="tg-04">Begumpet Smart Recovery Facility (Hyderabad)</option>
+                <option value="tg-05">Warangal Urban E-Waste Facility (Subedari, Hanamkonda)</option>
+                <option value="tg-06">Karimnagar Green Depot (Collectorate Rd)</option>
+                <option value="tg-07">Nizamabad Resource Recovery Plant (Khaleelwadi)</option>
+              </select>
+            </div>
+
+            <!-- 4. Photo Upload & Dropzone -->
+            <div class="form-group">
+              <label><i class="fa-solid fa-camera-retro"></i> Upload Photo of Discarded E-Waste</label>
+              <div class="dropzone-container" id="photoDropzone" onclick="document.getElementById('wastePhotoInput').click()">
+                <div class="dropzone-icon">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <div class="dropzone-text">
+                  <h4>Click or Drag & Drop Photo Here</h4>
+                  <p>Supports camera captures, JPG, PNG, WebP (Stamps live GPS automatically)</p>
+                </div>
+                <input type="file" id="wastePhotoInput" accept="image/*" capture="environment" style="display: none;" />
+              </div>
+            </div>
+
+            <button type="button" class="btn-primary" id="submitWasteBtn" style="width: 100%; justify-content: center; padding: 1rem; font-size: 1.05rem;">
+              <i class="fa-solid fa-circle-check"></i> Verify Drop-off & Claim Points
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Side: Real-Time Geotag Watermarked Photo Canvas Preview -->
+        <div class="preview-card">
+          <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem; display: flex; align-items: center; justify-content: space-between;">
+            <span><i class="fa-solid fa-stamp" style="color: var(--emerald-400);"></i> GPS Geotagged Photo Preview</span>
+            <button class="btn-mini" id="downloadStampedPhotoBtn" disabled title="Download stamped verification photo">
+              <i class="fa-solid fa-download"></i> Download
+            </button>
+          </h3>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Photo automatically stamped with your Telangana GPS coordinates, address, IST timestamp, and weight.
+          </p>
+
+          <div class="canvas-preview-wrap">
+            <canvas id="watermarkCanvas" class="hidden"></canvas>
+            <div class="canvas-placeholder" id="canvasPlaceholder">
+              <i class="fa-regular fa-image" style="font-size: 3rem; color: var(--text-muted);"></i>
+              <p>Upload a photo on the left to see the official verified Telangana Geotag stamp.</p>
+            </div>
+          </div>
+
+          <!-- Stamped Geotag Metadata Summary -->
+          <div class="geotag-meta-list">
+            <div class="geotag-meta-row">
+              <span class="geotag-meta-label"><i class="fa-solid fa-crosshairs"></i> GPS Coordinates:</span>
+              <span class="geotag-meta-value" id="metaCoordsVal">17.4474° N, 78.3762° E</span>
+            </div>
+            <div class="geotag-meta-row">
+              <span class="geotag-meta-label"><i class="fa-solid fa-location-dot"></i> Telangana Origin:</span>
+              <span class="geotag-meta-value" id="metaAddressVal" style="font-size: 12px; text-align: right;">HITEC City, Hyderabad, Telangana</span>
+            </div>
+            <div class="geotag-meta-row">
+              <span class="geotag-meta-label"><i class="fa-regular fa-clock"></i> Timestamp (IST):</span>
+              <span class="geotag-meta-value" id="metaTimestampVal">Live IST Auto</span>
+            </div>
+            <div class="geotag-meta-row">
+              <span class="geotag-meta-label"><i class="fa-solid fa-weight-scale"></i> Weight & Yield:</span>
+              <span class="geotag-meta-value" id="metaWeightVal" style="color: var(--amber-400);">1.0 kg (160 pts)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         PAGE 4: DEDICATED "MY SUBMISSIONS" (submissionsView)
+         Shows User's Past Submissions, Geotag Receipts, and Weight History
+         ==================================================================== -->
+    <section class="app-view" id="submissionsView">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--emerald-400);"></i> My E-Waste Submissions</h2>
+          <p>
+            Complete verifiable log of your past e-waste drop-offs across Telangana with stamped GPS receipts, weights, and points earned.
+          </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span class="calc-tier-badge" id="mySubmissionsCountBadge">2 Drop-offs Recorded</span>
+          <button class="btn-primary" onclick="window.App.switchView('submitView')">
+            <i class="fa-solid fa-camera"></i> New Drop-off
+          </button>
+        </div>
+      </div>
+
+      <div class="submissions-grid" id="mySubmissionsListContainer"></div>
+    </section>
+
+    <!-- ====================================================================
+         PAGE 5: TELANGANA COLLECTION CENTERS WITH SEARCH & FILTER (mapView)
+         Fixed Leaflet Rendering, Search Bar, and Live GPS Tracking
+         ==================================================================== -->
+    <section class="app-view" id="mapView">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2><i class="fa-solid fa-map-location-dot" style="color: var(--emerald-400);"></i> Telangana Collection Centers</h2>
+          <p>
+            Search and filter certified drop-off points across Hyderabad, Secunderabad, Warangal, Karimnagar, and Nizamabad. Showing live driving distance from your GPS position.
+          </p>
+        </div>
+        <button class="btn-primary" onclick="window.EcoMap.requestLocationPin()">
+          <i class="fa-solid fa-crosshairs"></i> Pan to My GPS Location
+        </button>
+      </div>
+
+      <div class="map-view-container">
+        <!-- Interactive Leaflet Map Card with Search and Filter Bar -->
+        <div class="map-card">
+          <!-- Search & Filter Bar Controls -->
+          <div class="map-search-bar">
+            <div class="search-input-row">
+              <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input 
+                  type="text" 
+                  id="centerSearchInput" 
+                  class="search-input-field" 
+                  placeholder="Search by city, area, or center (e.g. Warangal, Gachibowli, Secunderabad, HITEC)..." 
+                />
+                <button type="button" class="clear-search-btn" id="clearSearchBtn" title="Clear Search">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <span class="mini-tag" id="centersFoundCount" style="color: var(--emerald-400); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.4rem 0.75rem; white-space: nowrap;">
+                7 Centers in Telangana
+              </span>
+            </div>
+
+            <div class="search-filters-row">
+              <!-- Region Filter Pills -->
+              <div class="region-pills-wrap">
+                <span style="font-size: 0.75rem; color: var(--text-muted); margin-right: 2px;">Region:</span>
+                <button class="region-pill-filter active" onclick="window.EcoMap.setRegionFilter('all', this)">All Regions</button>
+                <button class="region-pill-filter" onclick="window.EcoMap.setRegionFilter('cyberabad', this)">Cyberabad / Tech Hub</button>
+                <button class="region-pill-filter" onclick="window.EcoMap.setRegionFilter('secunderabad', this)">Secunderabad</button>
+                <button class="region-pill-filter" onclick="window.EcoMap.setRegionFilter('hyderabad_central', this)">Hyderabad Central</button>
+                <button class="region-pill-filter" onclick="window.EcoMap.setRegionFilter('warangal', this)">Warangal</button>
+                <button class="region-pill-filter" onclick="window.EcoMap.setRegionFilter('north_telangana', this)">North Telangana</button>
+              </div>
+
+              <!-- Waste Category Filter Pills -->
+              <div class="map-filter-group">
+                <button class="filter-btn active" onclick="window.EcoMap.setFilter('all', this)">All Items</button>
+                <button class="filter-btn" onclick="window.EcoMap.setFilter('smartphones', this)">Phones/Laptops</button>
+                <button class="filter-btn" onclick="window.EcoMap.setFilter('batteries', this)">Batteries</button>
+                <button class="filter-btn" onclick="window.EcoMap.setFilter('appliances', this)">Appliances</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leaflet Map Container -->
+          <div class="map-canvas-container">
+            <div id="leafletMap"></div>
+          </div>
+        </div>
+
+        <!-- Right-hand Centers List with Live Distance -->
+        <div class="map-sidebar">
+          <div class="sidebar-heading">
+            <h3><i class="fa-solid fa-building-circle-check" style="color: var(--emerald-400);"></i> Drop-off Hubs</h3>
+            <span style="font-size: 0.75rem; color: var(--emerald-400); font-weight: 700;">Nearest First</span>
+          </div>
+          <div class="centers-list" id="centersListContainer"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         PAGE 6: REWARDS CATALOG (rewardsView)
+         Expanded: Seeds, Reusable Bags, Amazon Vouchers, Xbox Gaming Vouchers
+         ==================================================================== -->
+    <section class="app-view" id="rewardsView">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2><i class="fa-solid fa-gift" style="color: var(--amber-400);"></i> EcoCollect Rewards Catalog</h2>
+          <p>
+            Redeem your e-waste points for organic vegetable seeds, reusable cotton bags, Amazon Pay vouchers, Xbox gaming gift cards, and tech gadgets!
+          </p>
+        </div>
+        <div class="points-pill" style="font-size: 1rem; padding: 0.5rem 1.25rem;">
+          <i class="fa-solid fa-wallet"></i> Your Balance: <strong class="user-points-val" style="margin-left: 4px;">2,450</strong> Pts
+        </div>
+      </div>
+
+      <!-- Filter Chips -->
+      <div class="rewards-header-bar">
+        <div class="category-filter-chips">
+          <button class="cat-chip active" onclick="window.Rewards.setFilter('all', this)">
+            <i class="fa-solid fa-border-all"></i> All Rewards
+          </button>
+          <button class="cat-chip" onclick="window.Rewards.setFilter('eco', this)">
+            <i class="fa-solid fa-seedling"></i> Seeds, Bags & Eco Living
+          </button>
+          <button class="cat-chip" onclick="window.Rewards.setFilter('vouchers', this)">
+            <i class="fa-solid fa-credit-card"></i> Amazon Vouchers
+          </button>
+          <button class="cat-chip" onclick="window.Rewards.setFilter('gaming', this)">
+            <i class="fa-solid fa-gamepad"></i> Xbox & Gaming
+          </button>
+          <button class="cat-chip" onclick="window.Rewards.setFilter('electronics', this)">
+            <i class="fa-solid fa-headphones"></i> Electronics & Audio
+          </button>
+        </div>
+
+        <button class="btn-secondary" onclick="window.App.switchView('redemptionsView')">
+          <i class="fa-solid fa-ticket"></i> View "My Redemptions"
+        </button>
+      </div>
+
+      <!-- Dynamic Rewards Grid -->
+      <div class="rewards-grid" id="rewardsGridContainer"></div>
+    </section>
+
+    <!-- ====================================================================
+         PAGE 7: DEDICATED "MY REDEMPTIONS" VAULT (redemptionsView)
+         Voucher Codes, Copy Button, and QR Pass Modal
+         ==================================================================== -->
+    <section class="app-view" id="redemptionsView">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2><i class="fa-solid fa-ticket-simple" style="color: var(--emerald-400);"></i> My Redemptions</h2>
+          <p>
+            Your private voucher and product vault. Access your claimed rewards, instant alphanumeric coupon codes, QR passes for store scanning, and redemption statuses.
+          </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span class="calc-tier-badge" id="myRedemptionsCountBadge">1 Claimed</span>
+          <button class="btn-primary" onclick="window.App.switchView('rewardsView')">
+            <i class="fa-solid fa-plus"></i> Claim More Rewards
+          </button>
+        </div>
+      </div>
+
+      <div class="redemptions-container">
+        <!-- Toolbar & Filter -->
+        <div class="redemptions-toolbar">
+          <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-shield-check" style="color: var(--emerald-400);"></i> Verified Digital Vouchers & Passcodes
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="filter-btn active" onclick="window.Rewards.renderMyRedemptions('all')">All</button>
+            <button class="filter-btn" onclick="window.Rewards.renderMyRedemptions('active')">Active Codes</button>
+          </div>
+        </div>
+
+        <!-- Redeemed Cards Grid -->
+        <div class="redemption-cards-list" id="myRedemptionsListContainer"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================================
+       MODALS & OVERLAYS
+       ==================================================================== -->
+
+  <!-- 1. Submission Success Celebration Modal -->
+  <div class="modal-overlay" id="submissionSuccessModal">
+    <div class="modal-card" style="text-align: center;">
+      <button class="modal-close-btn" onclick="window.EwasteUploader.closeSubmissionModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div style="width: 72px; height: 72px; margin: 0 auto 1.25rem; background: rgba(16, 185, 129, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--emerald-400); border: 2px solid var(--emerald-400);">
+        <i class="fa-solid fa-check"></i>
+      </div>
+
+      <h2 style="font-size: 1.6rem; margin-bottom: 0.4rem;">Drop-off Verified!</h2>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        Your e-waste photo and Telangana GPS coordinates have been recorded on the recovery ledger.
+      </p>
+
+      <div style="background: rgba(10, 15, 24, 0.7); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; text-align: left;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem;">
+          <span style="color: var(--text-secondary);">Points Credited:</span>
+          <strong style="color: var(--amber-400); font-size: 1.15rem;" id="modalEarnedPoints">+0</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem;">
+          <span style="color: var(--text-secondary);">Verified Weight:</span>
+          <strong style="color: #fff;" id="modalWeightDisplay">0 kg</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem;">
+          <span style="color: var(--text-secondary);">CO₂ Prevented:</span>
+          <strong style="color: var(--emerald-400);" id="modalCo2Saved">0 kg</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; padding-top: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+          <span style="color: var(--text-muted);">Drop-off Location:</span>
+          <span style="color: var(--sky-400); font-weight: 600;" id="modalLocationDisplay">Telangana, India</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn-primary" style="flex: 1; justify-content: center;" onclick="window.EwasteUploader.closeSubmissionModal(); window.App.switchView('submissionsView');">
+          <i class="fa-solid fa-clock-rotate-left"></i> View Submissions
+        </button>
+        <button class="btn-secondary" style="flex: 1; justify-content: center;" onclick="window.EwasteUploader.closeSubmissionModal(); window.App.switchView('rewardsView');">
+          <i class="fa-solid fa-gift"></i> Rewards
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Redeem Confirmation Modal -->
+  <div class="modal-overlay" id="redeemConfirmModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="window.Rewards.closeConfirmModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-gift" style="color: var(--amber-400);"></i> Confirm Redemption
+      </h3>
+      <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.25rem;">
+        Are you sure you want to redeem your points for this item? A unique voucher code will be issued to your "My Redemptions" section.
+      </p>
+
+      <div style="background: rgba(10, 15, 24, 0.8); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem;">
+        <div style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;" id="confirmRewardTitle">Item Title</div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.4rem;">
+          <span style="color: var(--text-secondary);">Points to Deduct:</span>
+          <strong style="color: var(--amber-400);" id="confirmRewardCost">0 Pts</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+          <span style="color: var(--text-secondary);">Approx Retail Value:</span>
+          <strong style="color: var(--emerald-400);" id="confirmRewardValue">₹0</strong>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn-primary" style="flex: 1; justify-content: center;" onclick="window.Rewards.confirmRedeem()">
+          <i class="fa-solid fa-check"></i> Yes, Redeem Now
+        </button>
+        <button class="btn-secondary" style="flex: 1; justify-content: center;" onclick="window.Rewards.closeConfirmModal()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. QR Code Pass Modal for In-Store Scanning -->
+  <div class="modal-overlay" id="qrCodeModal">
+    <div class="modal-card" style="text-align: center;">
+      <button class="modal-close-btn" onclick="window.Rewards.closeQrModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 style="font-size: 1.25rem; margin-bottom: 0.35rem;" id="qrModalItemTitle">Digital Voucher Pass</h3>
+      <p style="color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 1.25rem;">
+        Present this QR code or alphanumeric key at any partner drop-off point or retail store in Telangana.
+      </p>
+
+      <div style="background: #ffffff; padding: 16px; border-radius: 16px; display: inline-block; margin: 0 auto 1.25rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);">
+        <canvas id="simulatedQrCanvas" width="200" height="200"></canvas>
+      </div>
+
+      <div class="voucher-code-box" style="margin-top: 0;">
+        <div class="voucher-code-text" id="qrModalVoucherCode">ECO-TG-XXXX-0000</div>
+        <button class="btn-copy-code" onclick="window.Rewards.copyVoucherCode(document.getElementById('qrModalVoucherCode').textContent)">
+          <i class="fa-regular fa-copy"></i> Copy
+        </button>
+      </div>
+
+      <div style="font-size: 0.8rem; color: var(--amber-400); margin-top: 0.5rem;" id="qrModalExpiry">
+        Expires in 90 days
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. User Profile Settings Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="window.App.closeAuthModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 style="font-size: 1.35rem; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-user-circle" style="color: var(--emerald-400);"></i> EcoCollect User Profile
+      </h3>
+      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
+        Manage your Telangana recycling profile and notification preferences.
+      </p>
+
+      <div class="form-group">
+        <label for="authUserNameInput">Your Full Name</label>
+        <input type="text" id="authUserNameInput" class="form-control" value="Shailu Sri" />
+      </div>
+
+      <div class="form-group">
+        <label for="authUserEmailInput">Email Address</label>
+        <input type="email" id="authUserEmailInput" class="form-control" value="shailu.sri@gmail.com" readonly style="background: rgba(0,0,0,0.3); color: var(--text-muted);" />
+      </div>
+
+      <div class="form-group">
+        <label>Present State / Region</label>
+        <input type="text" class="form-control" value="Telangana, India" readonly style="background: rgba(0,0,0,0.3); color: var(--emerald-400);" />
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn-primary" style="flex: 1; justify-content: center;" onclick="window.App.saveUserProfile()">
+          <i class="fa-solid fa-floppy-disk"></i> Save Changes
+        </button>
+        <button class="btn-secondary" style="flex: 1; justify-content: center;" onclick="window.App.closeAuthModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notifications Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <!-- 1. Leaflet JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- 2. Chart.js 4.4.1 CDN for Colorful Impact Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- 3. Application Logic Modules -->
+  <script src="js/calculator.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/upload.js"></script>
+  <script src="js/rewards.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

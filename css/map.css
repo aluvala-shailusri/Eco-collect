@@ -1,0 +1,335 @@
+/* ==========================================================================
+   EcoCollect Telangana - Leaflet Map Styles & Search / Filter Controls
+   ========================================================================== */
+
+/* Leaflet Container Fixes & Visibility Assurance */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 520px;
+  background: #0d1522 !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* Custom Leaflet Controls */
+.leaflet-bar {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+.leaflet-bar a {
+  background-color: #111e2e !important;
+  color: #f8fafc !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.2s ease;
+}
+
+.leaflet-bar a:hover {
+  background-color: #1e314b !important;
+  color: #10b981 !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(15, 23, 42, 0.8) !important;
+  color: #64748b !important;
+  font-size: 10px !important;
+  backdrop-filter: blur(8px);
+}
+
+.leaflet-control-attribution a {
+  color: #94a3b8 !important;
+}
+
+/* ==========================================================================
+   SEARCH & FILTER BAR CONTROLS
+   ========================================================================== */
+.map-search-bar {
+  background: rgba(15, 23, 42, 0.95);
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.search-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+}
+
+.search-input-wrap i.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.search-input-field {
+  width: 100%;
+  background: rgba(10, 15, 24, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  padding: 0.65rem 2.8rem 0.65rem 2.6rem;
+  color: #fff;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.search-input-field:focus {
+  outline: none;
+  border-color: var(--emerald-400);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-search-btn:hover {
+  color: #fff;
+}
+
+.search-filters-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.region-pills-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.region-pill-filter {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.region-pill-filter:hover, .region-pill-filter.active {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: var(--sky-400);
+  color: #fff;
+}
+
+/* ==========================================================================
+   CUSTOM LEAFLET MARKERS
+   ========================================================================== */
+.user-gps-marker {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.gps-pulse-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: #38bdf8;
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 14px #38bdf8;
+  z-index: 2;
+}
+
+.gps-pulse-wave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 38px;
+  height: 38px;
+  background: rgba(56, 189, 248, 0.35);
+  border: 1px solid #38bdf8;
+  border-radius: 50%;
+  animation: gpsWave 2s infinite ease-out;
+  z-index: 1;
+}
+
+@keyframes gpsWave {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+
+.center-marker-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #10b981, #065f46);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.5);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.center-marker-pin i {
+  transform: rotate(45deg);
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.center-marker-pin:hover {
+  transform: rotate(-45deg) scale(1.15);
+}
+
+.submission-marker-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #f59e0b, #b45309);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+  cursor: pointer;
+}
+
+.submission-marker-pin i {
+  transform: rotate(45deg);
+  color: #ffffff;
+  font-size: 14px;
+}
+
+/* ==========================================================================
+   LEAFLET POPUP STYLES
+   ========================================================================== */
+.leaflet-popup-content-wrapper {
+  background: rgba(17, 28, 46, 0.95) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-tip {
+  background: rgba(17, 28, 46, 0.95) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+  min-width: 250px;
+}
+
+.popup-card {
+  padding: 1rem 1.25rem;
+}
+
+.popup-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  margin-bottom: 6px;
+}
+
+.popup-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.popup-address {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.popup-distance-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.popup-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #cbd5e1;
+  padding: 4px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.popup-btn-directions {
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: opacity 0.2s ease;
+}
+
+.popup-btn-directions:hover {
+  opacity: 0.9;
+}
