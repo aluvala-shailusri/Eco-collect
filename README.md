@@ -303,10 +303,8 @@ It handles:
 ## 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
+git clone https://github.com/aluvala-shailusri/Eco-collect.git
 ```
-
-Replace `YOUR-USERNAME` and `YOUR-REPOSITORY` with your GitHub username and repository name.
 
 ---
 
